@@ -1,0 +1,36 @@
+services:
+  postgres-api:
+    image: postgres:16-alpine
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:5432
+    networks:
+      - db
+    volumes:
+      - postgres-api:/var/lib/postgresql/data
+  app:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgres-api
+      EXTERNAL_WS_URL: ws://chat-service:3000
+      EXTERNAL_HTTP_URL: http://chat-service:3000
+    ports:
+      - '${PORT}:${PORT}'
+    networks:
+      - db
+      - traffic
+    depends_on:
+      - postgres-api
+
+volumes:
+  postgres-api:
+
+networks:
+  db:
+  traffic:
+    external: true
