@@ -28,7 +28,7 @@ export class MessageService {
     return;
   }
 
-  @Transactional()
+  @Transactional() // ensure atomicity of message processing
   async processMessage(message: Message): Promise<void> {
     const validationErrors = this.validateMessage(message); // message consistency validation
     if (validationErrors) {
